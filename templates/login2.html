@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆&图片验证码</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'styles.css'%}">
+
+
+</head>
+<body>
+
+<div class="wrapper">
+
+	<div class="container">
+		<h1>Welcome & 图片验证码</h1>
+		<form class="form" >
+            {% csrf_token %}
+			<input type="text" name="username" placeholder="Username">
+			<input type="password" name="password" placeholder="Password">
+           
+            <!-- 验证码部分 start -->
+
+             <div>
+                 <img src="/app02/get_valid_img.png" alt="图片加载不出来" id="valid-img">
+                 <input type="text" name="valid_code" id="valid_code" placeholder="请输入验证码">
+
+            </div>
+            <!-- 验证码部分 结束 -->
+
+			<button type="button" id="login-button">Login</button>
+
+		</form>
+        <span class="login-error"></span>
+	</div>
+
+	<ul class="bg-bubbles">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+        <li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+        <li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+
+</div>
+
+<script src="{% static 'jquery-2.1.1.min.js' %}"></script>
+
+<script type="text/javascript">
+// $('#login-button').click(function(event){
+// 	event.preventDefault();
+// 	$('form').fadeOut(500);
+// 	$('.wrapper').addClass('form-success');
+// });
+
+/* 登陆ajax*/
+$("#login-button").click(function () {
+
+    $.ajax({
+        url:'/app02/login/',
+        type:'post',
+        data:{
+            "username":$('[name="username"]').val(),
+            "password":$('[name="password"]').val(),
+            "valid_code":$('[name="valid_code"]').val(),
+            "csrfmiddlewaretoken":$('[name="csrfmiddlewaretoken"]').val()
+            },
+        success:function (data) {
+            console.log(data);
+            if(data.status){
+
+                //data 是从后台传回来的数据
+                //有错误，就在页面上显示
+                $('.login-error').text(data.msg);
+                //强制刷新验证码
+                $("#valid-img").attr('src','/app02/get_valid_img.png/?t='+(new Date()).valueOf());
+
+
+            }else{
+                //登陆成功
+                location.href=data.msg;
+            }
+        }
+    })
+});
+
+
+
+/* 当输入框获取焦点时清空错误信息*/
+$("[name='password'],[name='username'],#valid_code").focus(function(){
+    $('.login-error').text("");
+});
+
+/* 验证码刷新获取 */
+
+$("#valid-img").click(function () {
+    $(this)[0].src='/app02/get_valid_img.png/?t='+(new Date()).valueOf();
+
+})
+
+
+
+
+</script>
+
+
+</body>
+</html>
