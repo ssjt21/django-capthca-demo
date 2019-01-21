@@ -4,7 +4,7 @@
 @author:随时静听
 @file: urls.py
 @time: 2018/11/27
-@email:wang_di@topsec.com.cn
+
 """
 
 from django.conf.urls import  url
